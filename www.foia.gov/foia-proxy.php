@@ -34,11 +34,13 @@ $headers = array_map(function ($header, $value) {
 }, array_keys($headers), $headers);
 
 // Proxy the query string
-$query = http_build_query(array_filter($_GET, function ($param) {
+$query = rm_array_to_url(array_filter($_GET, function ($param) {
   // Remove our internal `u` parameter
   return $param !== 'u';
 }, ARRAY_FILTER_USE_KEY));
-
+error_log($query);
+//$query = http_build_query($query);
+//error_log($query);
 
 list($headers, $body) = curl_get_contents(FOIA_BASE_URL . $path, $query, $headers);
 if (!$headers || !$body) {
@@ -51,6 +53,32 @@ foreach ($headers as $header) {
 }
 
 print $body;
+
+
+/**
+ *
+ *
+ * @param array  $query
+ * @return string
+ */
+function rm_array_to_url($queries) {
+    $ret = '';
+    $first = true;
+    foreach ($queries as $key => $value) {
+      if (is_array($value)) {
+        foreach ($value as $val) {
+          $ret .= (!$first?'&':'') . $key . '=' . $val;
+          $first = false;
+        }
+      }
+      else {
+        $ret .= (!$first?'&':'') . $key . '=' . $value;
+        $first = false;
+      }
+    }
+    $ret = str_replace(" ", "%20", $ret);
+    return $ret;
+}
 
 
 /**
