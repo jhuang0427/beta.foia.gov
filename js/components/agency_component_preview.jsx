@@ -57,7 +57,9 @@ function AgencyComponentPreview({ onAgencySelect, agencyComponent, isCentralized
         </div>
         <div className="agency-preview_contact-section">
           <FoiaSubmissionAddress submissionAddress={agencyComponent.submission_address} />
+          { agencyComponent.submission_email &&
           <p className="agency-info_email">{agencyComponent.submission_email} </p>
+          }
         </div>
 
       </div>
